@@ -88,6 +88,12 @@ proxy-groups:
     include-all: true
     proxies:
       - 🔀 故障转移
+  - name: 🐟 漏网之鱼
+    type: select
+    include-all: true
+    proxies:
+      - DIRECT
+      - ♻️ 自动选择
   - name: 🚀 默认代理
     type: select
     include-all: true
@@ -167,12 +173,6 @@ proxy-groups:
       - DIRECT
       - ♻️ 自动选择
   - name: 🎯 直连
-    type: select
-    include-all: true
-    proxies:
-      - DIRECT
-      - ♻️ 自动选择
-  - name: 🐟 漏网之鱼
     type: select
     include-all: true
     proxies:

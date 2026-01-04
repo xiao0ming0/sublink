@@ -53,7 +53,7 @@ dns:
   enable: true
   cache-algorithm: arc
   listen: 0.0.0.0:1053
-  ipv6: false
+  ipv6: true
   respect-rules: true
   enhanced-mode: fake-ip
   fake-ip-range: 28.0.0.1/8
@@ -182,16 +182,23 @@ proxy-groups:
 
 # 规则匹配
 rules:
-  - DOMAIN-SUFFIX,steamcontent.com,🎯 直连
-  - DOMAIN-SUFFIX,steamserver.net,🎯 直连
-  - RULE-SET,GameDownload,🎯 直连
-  - GEOSITE,steam@cn,🎯 直连
-  - GEOSITE,category-games@cn,🎯 直连
-  - GEOSITE,category-games,🎮 Steam
+# DOMAIN-SUFFIX  ​  DOMAIN-SUFFIX,google.com   以指定字符串结尾的域名
+# DOMAIN​           DOMAIN,google.com          完全相等的域名
+# DOMAIN-KEYWORD  ​ DOMAIN-KEYWORD,google      包含指定关键字的域名
 
+# 自定义代理
+  - DOMAIN-SUFFIX,qichiyu.com,🚀 默认代理
+  - DOMAIN,sub.ag.cn.eu.org,🚀 默认代理
+# 自定义直连
+  - DOMAIN-SUFFIX,xinling.site,🎯 直连
+
+# 通用规则
+  - RULE-SET,GameDownload,🎮 Steam
+  # - GEOSITE,category-games@cn,🎯 直连
+  # - GEOSITE,category-games,🎮 Steam
   - RULE-SET,private_ip,🎯 直连,no-resolve
   - RULE-SET,private_domain,🎯 直连
-  - DOMAIN-SUFFIX,qichiyu.com,🚀 默认代理
+  # - DOMAIN-SUFFIX,qichiyu.com,🚀 默认代理
   - RULE-SET,proxylite,🚀 默认代理
   - RULE-SET,ai,🤖 ChatGPT
   - RULE-SET,speedtest_domain,✈️ Speedtest

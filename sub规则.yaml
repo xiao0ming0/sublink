@@ -245,8 +245,8 @@ rules:
   # 3. 自定义强制代理 (针对特定域名)
   - DOMAIN-SUFFIX,qichiyu.com,🚀 默认代理
   - DOMAIN,sub.ag.cn.eu.org,🚀 默认代理
-  - DOMAIN-SUFFIX,slack.com,🤖 默认代理
-  - DOMAIN-SUFFIX,pypi.org,🤖 默认代理
+  - DOMAIN-SUFFIX,slack.com,🚀 默认代理
+  - DOMAIN-SUFFIX,pypi.org,🚀 默认代理
 
   # 4. 特定功能/流媒体规则 (细分代理)
   - RULE-SET,ai,🤖 ChatGPT

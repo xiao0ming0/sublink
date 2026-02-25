@@ -9,7 +9,6 @@ proxy-providers:
       interval: 300
     proxy: DIRECT
 
-
 # 全局配置 
 mixed-port: 7890
 allow-lan: true
@@ -93,9 +92,10 @@ proxy-groups:
     url: "http://www.gstatic.com/generate_204"
     interval: 180
     tolerance: 50
-    lazy: true
+    lazy: false
+    expected-status: 204
     include-all: true
-    filter: "^(?!.*Frontier).*$"
+    filter: "^(?!.*落地).*$"
 
   - name: 🖐️ 手动选择
     type: select
@@ -137,6 +137,16 @@ proxy-groups:
       - 🖐️ 手动选择
       - 🔗 链式代理
       - DIRECT
+
+
+  - name: 🍀 Google_IP
+    type: select
+    include-all: true
+    proxies:
+      - 🖐️ 手动选择
+      - 🔗 链式代理
+      - DIRECT
+
 
   - name: 🐟 漏网之鱼
     type: select
@@ -235,11 +245,11 @@ proxy-groups:
       - 🏁 落地选择
     dialer-proxy: 🛡️ 前置选择
 
-  - name: 🚫 广告拦截
-    type: select
-    include-all: true
-    proxies:
-      - REJECT
+  # - name: 🚫 广告拦截
+  #   type: select
+  #   include-all: true
+  #   proxies:
+  #     - REJECT
 
 
 rules:
@@ -249,7 +259,7 @@ rules:
 
 
   # 1. 基础过滤与本地拦截
-  - RULE-SET,ADBlock,🚫 广告拦截
+  # - RULE-SET,ADBlock,🚫 广告拦截
   - RULE-SET,private_ip,🎯 直连,no-resolve
   - RULE-SET,private_domain,🎯 直连
 
@@ -259,13 +269,17 @@ rules:
 
   # 2. 自定义强制直连 (最优先)
   - DOMAIN-SUFFIX,xinling.site,🎯 直连
-  
+  - DOMAIN-SUFFIX,szlcsc.com,🎯 直连
+
+
   # 3. 自定义强制代理 (针对特定域名)
   - DOMAIN-SUFFIX,qichiyu.com,🚀 默认代理
   - DOMAIN,sub.ag.cn.eu.org,🚀 默认代理
   - DOMAIN-SUFFIX,slack.com,🚀 默认代理
   - DOMAIN-SUFFIX,pypi.org,🚀 默认代理
   - DST-PORT,2243,📡 SSH代理
+  - DST-PORT,6901,📡 SSH代理
+
 
   # 4. 特定功能/流媒体规则 (细分代理)
   - RULE-SET,ai,🤖 ChatGPT
@@ -277,13 +291,22 @@ rules:
   - RULE-SET,netflix_ip,🎥 NETFLIX
   - RULE-SET,tiktok_domain,🎵 TikTok
   - RULE-SET,google_domain,🍀 Google
-  - RULE-SET,google_ip,🍀 Google
+  - RULE-SET,google_ip,🍀 Google_IP
   - RULE-SET,onedrive_domain,🐬 OneDrive
   - RULE-SET,microsoft_domain,🪟 Microsoft
   - RULE-SET,Crypto,💶 加密交易
   - RULE-SET,paypal_domain,💶 加密交易
   - RULE-SET,speedtest_domain,✈️ Speedtest
-  - RULE-SET,GameDownload,🎮 Steam
+
+  # - DOMAIN-SUFFIX,steamcontent.com,DIRECT
+  # - DOMAIN-SUFFIX,steamserver.net,DIRECT
+  # - RULE-SET,GameDownload,DIRECT
+  # - GEOSITE,steam@cn,DIRECT
+  # - GEOSITE,category-games@cn,DIRECT
+  # - GEOSITE,category-games,🎮 Steam
+  - RULE-SET,steam_cn,🎯 直连
+  - RULE-SET,steam,🎮 Steam
+
 
   # 5. 通用代理规则 (针对非中国流量)
   - RULE-SET,proxylite,🚀 默认代理
@@ -305,19 +328,22 @@ rule-anchor:
 
 rule-providers:
   # 广告与基础
-  ADBlock: {<<: *domain, url: "https://hubproxy.xinling.site/https://adrules.top/adrules-mihomo.mrs"}
+  # ADBlock: {<<: *domain, url: "https://adrules.top/adrules-mihomo.mrs"}
   private_domain: { <<: *domain, url: "https://hubproxy.xinling.site/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/private.mrs"}
   private_ip: {<<: *ip, url: "https://hubproxy.xinling.site/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/private.mrs"}
 
   # 资源与输入法
-  SogouInput: {<<: *class, url: "https://hubproxy.xinling.site/https://ruleset.skk.moe/Clash/non_ip/sogouinput.txt"}
+  SogouInput: {<<: *class, url: "https://ruleset.skk.moe/Clash/non_ip/sogouinput.txt"}
 
   # 代理规则集
   proxylite: { <<: *class, url: "https://hubproxy.xinling.site/https://raw.githubusercontent.com/qichiyuhub/rule/refs/heads/main/proxy.list"}
   ai: { <<: *domain, url: "https://hubproxy.xinling.site/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ai-!cn.mrs" }
-  Crypto: {<<: *class, url: "https://hubproxy.xinling.site/https://gcore.jsdelivr.net/gh/powerfullz/override-rules@master/ruleset/Crypto.list"}
-  GameDownload: { <<: *class-yaml, url: "https://hubproxy.xinling.site/https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Game/Game.yaml"}
+  Crypto: {<<: *class, url: "https://gcore.jsdelivr.net/gh/powerfullz/override-rules@master/ruleset/Crypto.list"}
+  # GameDownload: { <<: *class-yaml, url: "https://hubproxy.xinling.site/https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Game/Game.yaml"}
   
+  steam_cn: { <<: *domain, url: "https://ghproxy.inklazy.com/github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/steam@cn.mrs"}
+  steam: { <<: *domain, url: "https://ghproxy.inklazy.com/github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/steam.mrs"}
+
   # 分类规则
   youtube_domain: { <<: *domain, url: "https://hubproxy.xinling.site/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/youtube.mrs"}
   google_domain: { <<: *domain, url: "https://hubproxy.xinling.site/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/google.mrs"}
@@ -340,3 +366,4 @@ rule-providers:
   cn_domain: { <<: *domain, url: "https://hubproxy.xinling.site/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/cn.mrs"}
   cn_ip: { <<: *ip, url: "https://hubproxy.xinling.site/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/cn.mrs"}
   fakeipfilter_domain: {<<: *domain, url: "https://hubproxy.xinling.site/https://raw.githubusercontent.com/wwqgtxx/clash-rules/release/fakeip-filter.mrs"}
+  
